@@ -13,24 +13,35 @@ app.get("/", function (req, res) {
 
 app.get("/api/:data?", (req, res) => {
   const reqData = req.params.data;
-  let date;
 
-  if (!isNaN(reqData)) {
-    date = new Date(parseInt(reqData));
+  if (!reqData) {
+    // Return current time if no date is provided
+    const currentDate = new Date();
+    res.json({
+      unix: currentDate.getTime(),
+      utc: currentDate.toUTCString()
+    });
   } else {
-    date = new Date(reqData);
+
+    let date;
+  
+    if (!isNaN(reqData)) {
+      date = new Date(parseInt(reqData));
+    } else {
+      date = new Date(reqData);
+    }
+  
+    if (isNaN(date.getTime())) {
+      res.json({ error: "Invalid Date" });
+      return;
+    }
+  
+  
+    res.json({
+      unix: date.getTime(),
+      utc: date.toUTCString()
+    });
   }
-
-  if (isNaN(date.getTime())) {
-    res.json({ error: "Invalid Date" });
-    return;
-  }
-
-
-  res.json({
-    unix: date.getTime(),
-    utc: date.toUTCString()
-  });
 });
 
 
